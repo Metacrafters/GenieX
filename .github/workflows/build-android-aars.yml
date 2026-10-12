@@ -1,0 +1,23 @@
+
+name: Build and Download Android AARs
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  build-sdk:
+    name: Build SDK artifacts
+    uses: ./.github/workflows/_build-sdk.yml
+    with:
+      upload_artifact: true
+
+  build-aar:
+    name: Build both Android AARs
+    needs: [build-sdk]
+    uses: ./.github/workflows/_build-android-aar.yml
+    with:
+      upload_artifact: true
