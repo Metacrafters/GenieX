@@ -1,8 +1,22 @@
-
-name: Build and Download Android AARs
+name: Build and Publish Android AARs
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: "Maven version to publish (e.g. 0.8.0-llamaparams). Leave empty for 0.8.0-llamaparams.<run_number>"
+        required: false
+        type: string
+      group_id:
+        description: "Maven groupId"
+        required: false
+        type: string
+        default: io.github.metacrafters
+      publish:
+        description: "Publish to GitHub Packages after building"
+        required: false
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -21,3 +35,70 @@ jobs:
     uses: ./.github/workflows/_build-android-aar.yml
     with:
       upload_artifact: true
+
+  publish-github-packages:
+    name: Publish AARs to GitHub Packages
+    needs: [build-aar]
+    if: inputs.publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    env:
+      GROUP_ID: ${{ inputs.group_id }}
+      VERSION: ${{ inputs.version != '' && inputs.version || format('0.8.0-llamaparams.{0}', github.run_number) }}
+    steps:
+      # Artifacts from _build-android-aar.yml: android-aar (default build,
+      # file geniex-android-aar.aar) and android-aar-cpu (geniex-android-aar-cpu.aar).
+      - name: Download default AAR
+        uses: actions/download-artifact@v8
+        with:
+          name: android-aar
+          path: aars
+
+      - name: Download CPU-only AAR
+        uses: actions/download-artifact@v8
+        with:
+          name: android-aar-cpu
+          path: aars
+
+      - name: Set up JDK 17 with GitHub Packages credentials
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+          server-id: github
+          server-username: GITHUB_ACTOR
+          server-password: GITHUB_TOKEN
+
+      - name: Publish
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -l aars
+          publish() {  # <file> <artifactId>
+            mvn -B -q org.apache.maven.plugins:maven-deploy-plugin:3.1.2:deploy-file \
+              -Dfile="$1" \
+              -DgroupId="${GROUP_ID}" \
+              -DartifactId="$2" \
+              -Dversion="${VERSION}" \
+              -Dpackaging=aar \
+              -DgeneratePom=true \
+              -DrepositoryId=github \
+              -Durl="https://maven.pkg.github.com/${REPO}"
+            echo "Published ${GROUP_ID}:$2:${VERSION}"
+          }
+          publish aars/geniex-android-aar.aar     geniex-android
+          publish aars/geniex-android-aar-cpu.aar geniex-android-cpu
+          {
+            echo "### Published"
+            echo '```groovy'
+            echo "implementation '${GROUP_ID}:geniex-android:${VERSION}'"
+            echo "implementation '${GROUP_ID}:geniex-android-cpu:${VERSION}'  // CPU-only variant"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
