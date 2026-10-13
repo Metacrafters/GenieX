@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.metacrafters</groupId>
+  <artifactId>geniex-android</artifactId>
+  <version>0.8.0-llamaparams.4</version>
+  <packaging>aar</packaging>
+  <name>geniex-android</name>
+  <description>GenieX Android AAR (Metacrafters fork)</description>
+  <url>https://github.com/Metacrafters/GenieX</url>
+</project>
