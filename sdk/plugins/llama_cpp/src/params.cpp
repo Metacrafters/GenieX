@@ -47,9 +47,9 @@ llama_model_params build_model_params(const geniex_ModelConfig& config, Device d
     static const bool mmap_matrix[3][3] = {
         {true, false, false},   // Linux
         {false, false, false},  // Windows
-        {true, true, false}   // Android
+        {true, true, false}     // Android
     };
-   GENIEX_LOG_INFO("Inside build_model_params: kHostPlatform={}, device={}",
+    GENIEX_LOG_INFO("Inside build_model_params: kHostPlatform={}, device={}",
         kHostPlatform == Platform::Linux     ? "Linux"
         : kHostPlatform == Platform::Windows ? "Windows"
         : kHostPlatform == Platform::Android ? "Android"
