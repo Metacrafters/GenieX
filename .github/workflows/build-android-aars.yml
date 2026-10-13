@@ -11,7 +11,7 @@ on:
         description: "Maven groupId"
         required: false
         type: string
-        default: io.github.metacrafters
+        default: com.metacrafters
       publish:
         description: "Publish to GitHub Packages after building"
         required: false
