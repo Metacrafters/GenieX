@@ -33,6 +33,7 @@ constexpr Platform kHostPlatform =
 // Device
 
 Device classify_device(const char* device_id, int n_gpu_layers) {
+    GENIEX_LOG_INFO("[classify_device] n_gpu_layers={}, device_id={}, device_id[0]={}", n_gpu_layers, device_id, device_id ? device_id[0] : '\0');
     if (n_gpu_layers == 0) return Device::CPU;                   // <0 means "all layers" to llama.cpp
     if (!device_id || device_id[0] == '\0') return Device::NPU;  // HYBRID treat as NPU
     const std::string id(device_id);
@@ -51,7 +52,12 @@ llama_model_params build_model_params(const geniex_ModelConfig& config, Device d
     };
 
     bool use_mmap = mmap_matrix[static_cast<int>(kHostPlatform)][static_cast<int>(device)];
-
+    GENIEX_LOG_INFO(
+        "mmap diagnostic: platform={}, device={}, use_mmap={}",
+        static_cast<int>(kHostPlatform),
+        static_cast<int>(device),
+        use_mmap
+    );
     llama_model_params mpar = llama_model_default_params();
     mpar.load_mode          = use_mmap ? LLAMA_LOAD_MODE_MMAP : LLAMA_LOAD_MODE_NONE;
     mpar.n_gpu_layers       = config.n_gpu_layers;
