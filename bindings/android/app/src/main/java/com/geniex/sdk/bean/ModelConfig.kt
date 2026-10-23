@@ -58,4 +58,6 @@ data class ModelConfig(
      *  native geniex_PowerMode enum on the JNI side; an unknown alias falls
      *  back to burst with a logged warning. */
     val power_mode: String = "",
+    val kv_unified: bool = false,
+    val n_outputs_max = 0,
 )
