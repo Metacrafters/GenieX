@@ -483,6 +483,8 @@ typedef struct {
     int32_t n_ubatch;         // physical maximum batch size
     int32_t n_seq_max;        // max number of sequences (i.e. distinct states for recurrent models)
     int32_t n_gpu_layers;     // number of layers to offload to GPU, 0 = all layers on CPU
+    bool kv_unified;          // whether to use unified KV cache
+    int32_t n_outputs_max;    // max number of outputs per sequence
 
     geniex_Path chat_template_path;     // path to chat template file, optional
     const char* chat_template_content;  // content of chat template file, optional
