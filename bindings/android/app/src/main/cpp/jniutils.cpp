@@ -267,9 +267,18 @@ geniex_ModelConfig extract_model_config(JNIEnv* env, jobject configObj) {
     fid               = env->GetFieldID(cls, "spec_p_min", "F");
     config.spec_p_min = env->GetFloatField(configObj, fid);
 
+    // ----------- kv_unified (Boolean) -----------
+    fid               = env->GetFieldID(cls, "kv_unified", "Z");
+    config.kv_unified = env->GetBooleanField(configObj, fid);
+
+    // ----------- n_outputs_max (Int) -----------
+    fid                  = env->GetFieldID(cls, "n_outputs_max", "I");
+    config.n_outputs_max = env->GetIntField(configObj, nOutputsMaxId);
+
     // power_mode
     fid  = env->GetFieldID(cls, "power_mode", "Ljava/lang/String;");
     jstr = (jstring)env->GetObjectField(configObj, fid);
+
     {
         const std::string power_mode_str = jstr ? jstring2str(env, jstr) : "";
         if (!geniex_power_mode_from_alias(power_mode_str.c_str(), &config.power_mode)) {

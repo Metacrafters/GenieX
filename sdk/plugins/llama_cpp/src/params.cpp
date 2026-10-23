@@ -47,7 +47,7 @@ llama_model_params build_model_params(const geniex_ModelConfig& config, Device d
     static const bool mmap_matrix[3][3] = {
         {true, false, false},   // Linux
         {false, false, false},  // Windows
-        {true, true, false}   // Android
+        {true, true, false}     // Android
     };
 
     bool use_mmap = mmap_matrix[static_cast<int>(kHostPlatform)][static_cast<int>(device)];
@@ -109,7 +109,8 @@ llama_context_params build_context_params(
     cpar.flash_attn_type      = static_cast<llama_flash_attn_type>(fa);
     cpar.no_perf              = false;
     cpar.kv_unified           = config.kv_unified;
-    cpar.n_outputs_max        = config.n_outputs_max > 0 ? config.n_outputs_max : 1;  // will be set later if speculative decoding is enabled
+    cpar.n_outputs_max =
+        config.n_outputs_max > 0 ? config.n_outputs_max : 1;  // will be set later if speculative decoding is enabled
     if (spec) {
         cpar.n_rs_seq     = spec->need_n_rs_seq();
         const auto limits = common_speculative_get_output_limits(
