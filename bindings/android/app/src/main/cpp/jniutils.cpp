@@ -273,7 +273,7 @@ geniex_ModelConfig extract_model_config(JNIEnv* env, jobject configObj) {
 
     // ----------- n_outputs_max (Int) -----------
     fid                  = env->GetFieldID(cls, "n_outputs_max", "I");
-    config.n_outputs_max = env->GetIntField(configObj, nOutputsMaxId);
+    config.n_outputs_max = env->GetIntField(configObj, fid);
 
     // power_mode
     fid  = env->GetFieldID(cls, "power_mode", "Ljava/lang/String;");
